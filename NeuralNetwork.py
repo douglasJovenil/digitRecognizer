@@ -45,7 +45,7 @@ class NeuralNetwork(object):
 
     def train(self, in_list, target_list):
         # Iteracao das epocas
-        for epoch in range(20):
+        for epoch in range(3000):
             # Iteracao de todas as entradas e saidas
             for actual_in, actual_target in zip(in_list, target_list):
                 # Converte lista para array
@@ -63,11 +63,10 @@ class NeuralNetwork(object):
                 # Calcula os erros nas camadas ocultas
                 for i in range(len(self.weights) - 1, 0, -1):
                     self.error.insert(0, np.dot(self.weights[i].T, self.error[0]))
-                # Atualiza os pesos na primeira camada
-                self.weights[-1] = self.lr * np.dot((self.error[-1] * self.out_nodes * (1 - self.out_nodes)), self.hidden[-1].T)
+                # Atualiza os pesos na ultima camada
+                self.weights[-1] += self.lr * np.dot((self.error[-1] * self.out_nodes * (1 - self.out_nodes)), self.hidden[-1].T)
                 # Atualiza os pesos nas camadas ocultas
                 for i in range(len(self.weights) - 2, 0, -1):
-                    self.weights[i] = self.lr * np.dot((self.error[i] * self.hidden[i] * (1 - self.hidden[i])), self.hidden[i - 1].T)
-                # Atualiza os pesos na ultima camada
-                self.weights[0] = self.lr * np.dot((self.error[0] * self.hidden[0] * (1 - self.hidden[0])), inputs.T)
-            print(self.weights, end='\n\n')
+                    self.weights[i] += self.lr * np.dot((self.error[i] * self.hidden[i] * (1 - self.hidden[i])), self.hidden[i - 1].T)
+                # Atualiza os pesos na primeira camada
+                self.weights[0] += self.lr * np.dot((self.error[0] * self.hidden[0] * (1 - self.hidden[0])), inputs.T)

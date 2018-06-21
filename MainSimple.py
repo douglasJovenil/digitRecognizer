@@ -1,6 +1,4 @@
 import numpy as np
-import scipy
-
 
 class NeuralNetwork(object):
     def __init__(self, in_nodes, hid_nodes, out_nodes, lr):
@@ -11,11 +9,11 @@ class NeuralNetwork(object):
         self.lr = lr
         # Inicia os pesos
         self.wih = np.random.normal(0, pow(self.hid_nodes, -0.5), (self.hid_nodes, self.in_nodes))
-        self.who = np.random.normal(0, pow(self.out_nodes, -0.5), (self.out_nodes, self.in_nodes))
+        self.who = np.random.normal(0, pow(self.out_nodes, -0.5), (self.out_nodes, self.hid_nodes))
         # Define a funcao de ativacao
         self.act_func = lambda x: 1 / (1 + np.exp(-x))
-        
-        
+
+
     def query(self, in_list):
         # Converte a lista em array
         inputs = np.array([in_list]).T
@@ -28,11 +26,11 @@ class NeuralNetwork(object):
         # Funcao de ativacao na saida
         final_outputs = self.act_func(final_inputs)
         return final_outputs
-    
-    
+
+
     def train(self, in_list, target_list):
         # Iteracao das epocas
-        for epoch in range(100):
+        for epoch in range(10000):
             # Iteracao de todas as entradas e saidas
             for actual_in, actual_target in zip(in_list, target_list):
                 # Converte lista para array
@@ -60,15 +58,17 @@ def main():
               [0, 0], [1, 0], [0, 1], [1, 1],
               [1, 1], [0, 0], [1, 1], [1, 0],
               [0, 1], [1, 0], [1, 1], [0, 0]]
-    outputs = [[0], [0], [0], [1],
-               [1], [0], [1], [0],
-               [0], [0], [1], [0],
-               [0], [0], [0], [1],
-               [1], [0], [1], [0],
-               [0], [0], [1], [0]]
+    outputs = [[0, 1], [0, 1], [0, 1], [1, 0],
+               [1, 0], [0, 0], [1, 0], [0, 0],
+               [0, 0], [0, 0], [1, 0], [0, 0],
+               [0, 0], [0, 0], [0, 0], [1, 0],
+               [1, 0], [0, 0], [1, 0], [0, 0],
+               [0, 0], [0, 0], [1, 0], [0, 0]]
+    inputs = [[1, 1]]
+    outputs = [[0]]
     myNet = NeuralNetwork(2, 2, 1, 0.01)
-    #myNet.train(inputs, outputs)
-    #print(myNet.query([1, 1]))
+    myNet.train(inputs, outputs)
+    print(myNet.query([1, 1]))
 
 
 if __name__ == '__main__':

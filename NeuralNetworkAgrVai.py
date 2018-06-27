@@ -9,6 +9,8 @@ class NeuralNetwork(object):
         # Inicia o layout da rede
         self.net = []
         self.weights = []
+        self.errors = []
+        self.grads = []
         # Função de custo
         self.f_cost = lambda e: np.square(sum(e))/2
         # Função de erro
@@ -17,9 +19,9 @@ class NeuralNetwork(object):
         self.f_act = lambda x: 1/(1 + np.exp(-x))
         # Derivada da função de ativação
         self.f_act_derivative = lambda x: np.exp(-x)/np.square(1 + np.exp(-x))
-        # Função para o somatório da layer + bias
-        self.f_foward = lambda x, w: np.dot(w, x) + 1
-        # Função para a resultado do neurônio -> f_act(f_foward) - 1 por causa do bias
+        # Função para o somatório da layer
+        self.f_foward = lambda x, w: np.dot(w, x)
+        # Função para a resultado do neurônio -> f_act(f_foward)
         self.f_out = lambda x, w: self.f_act(self.f_foward(x, w))
         # Função do gradiente descendente
         self.f_grad_out = lambda c, x, w: c * self.f_act_derivative(self.f_foward(x, w))
@@ -27,14 +29,14 @@ class NeuralNetwork(object):
         self.f_delta_w_out = lambda x, g: self.lr * np.dot(g, x.T)
 
     def train(self, inputs, targets):
-        # Inicia o custo
-        cost = 0
         # Passa um vetor de linhas para colunas
         to_col = lambda x: np.array([x]).T
         # Itera as epocas
         for epoch in range(self.epochs):
             # Itera todas as entradas
             for actual_in, actual_target in zip(inputs, targets):
+                # Limpa as listas de erros e gradientes
+                self.error, self.grad = [], []
                 # Passa as entradas e targets para um vetor de colunas
                 actual_in, actual_target = to_col(actual_in), to_col(actual_target)
                 # Atribui o vetor de entradas na primeira camada da rede
@@ -42,19 +44,17 @@ class NeuralNetwork(object):
                 # FeedFoward
                 for i in range(len(self.weights)):
                     self.net[i+1] = self.f_out(self.net[i], self.weights[i])
-                # Custo da iteração -> -1 por causa do bias
-                cost = self.f_cost(self.f_error(actual_target, self.net[-1] - 1))
-                # Calcula o gradiente na ultima layer
-                grad = self.f_grad_out(cost, self.net[-2], self.weights[-1])
-                # Calcula o ajuste na ultima layer
-                self.weights[-1] += self.f_delta_w_out(self.net[1], grad)
-                # AJUSTA NA PENULTIMA LAYER
-                p_termo = self.f_act_derivative(self.f_foward(self.net[-3], self.weights[-2]))
-                #print(p_termo)
-                s_termo = np.dot(self.weights[-1].T, grad)
-                grad_oc = p_termo * s_termo
-                ajuste_oc = self.lr * self.f_foward(self.net[0].T, grad_oc)
-                self.weights[0] += ajuste_oc
+                # Erro da iteração
+                self.error.insert(0, self.f_error(actual_target, self.net[-1]))
+                # Retropropagação do custo
+                self.grad.insert(0, np.multiply(self.error[-1], self.f_act_derivative(self.net[-1])))
+                for i in range(len(self.weights)-2, -1, -1):
+                    self.error.insert(0, np.dot(self.weights[i+1].T, self.grad[0]))
+                    self.grad.insert(0, np.multiply(self.error[0], self.f_act_derivative(self.net[i+1])))
+                # Ajuste dos pesos
+                for i in range(len(self.weights)):
+                    self.weights[i] += self.lr * np.dot(self.grad[i], self.net[i].T)
+
 
 
 

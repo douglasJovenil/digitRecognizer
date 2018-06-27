@@ -3,7 +3,7 @@ import numpy as np
 
 class NeuralNetwork(object):
     def __init__(self, epochs, lr):
-        # Define alguns parâmetros
+        # Define alguns parametros
         self.epochs = epochs
         self.lr = lr
         # Inicia o layout da rede
@@ -11,21 +11,21 @@ class NeuralNetwork(object):
         self.weights = []
         self.errors = []
         self.grads = []
-        # Função de custo
+        # Funcao de custo
         self.f_cost = lambda e: np.square(sum(e))/2
-        # Função de erro
+        # Funcao de erro
         self.f_error = lambda d, y: d - y
-        # Função de ativação
+        # Funcao de ativacao
         self.f_act = lambda x: 1/(1 + np.exp(-x))
-        # Derivada da função de ativação
+        # Derivada da funcao de ativacao
         self.f_act_derivative = lambda x: np.exp(-x)/np.square(1 + np.exp(-x))
-        # Função para o somatório da layer
+        # Funcao para o somatorio da layer
         self.f_foward = lambda x, w: np.dot(w, x)
-        # Função para a resultado do neurônio -> f_act(f_foward)
+        # Funcao para a resultado do neuronio -> f_act(f_foward)
         self.f_out = lambda x, w: self.f_act(self.f_foward(x, w))
-        # Função do gradiente descendente
+        # Funcao do gradiente descendente
         self.f_grad_out = lambda c, x, w: c * self.f_act_derivative(self.f_foward(x, w))
-        # Função de ajuste dos pesos
+        # Funcao de ajuste dos pesos
         self.f_delta_w_out = lambda x, g: self.lr * np.dot(g, x.T)
 
     def train(self, inputs, targets):
@@ -44,13 +44,13 @@ class NeuralNetwork(object):
                 # FeedFoward
                 for i in range(len(self.weights)):
                     self.net[i+1] = self.f_out(self.net[i], self.weights[i])
-                # Erro da iteração
+                # Erro da iteracao
                 self.error.insert(0, self.f_error(actual_target, self.net[-1]))
-                # Retropropagação do custo
-                self.grad.insert(0, np.multiply(self.error[-1], self.f_act_derivative(self.net[-1])))
+                # Retropropagacao do custo
+                self.grad.insert(0, np.multiply(self.error[-1], self.f_act_derivative(self.f_foward(self.net[-2], self.weights[-1]))))
                 for i in range(len(self.weights)-2, -1, -1):
                     self.error.insert(0, np.dot(self.weights[i+1].T, self.grad[0]))
-                    self.grad.insert(0, np.multiply(self.error[0], self.f_act_derivative(self.net[i+1])))
+                    self.grad.insert(0, np.multiply(self.error[0], self.f_act_derivative(self.f_foward(self.net[i], self.weights[i]))))
                 # Ajuste dos pesos
                 for i in range(len(self.weights)):
                     self.weights[i] += self.lr * np.dot(self.grad[i], self.net[i].T)
@@ -78,7 +78,3 @@ class NeuralNetwork(object):
 
     def add(self, num_nodes):
         self.net.append(num_nodes)
-
-    def show(self):
-        for value in self.net:
-            print(value)

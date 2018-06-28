@@ -3,45 +3,34 @@ np.set_printoptions(suppress=True)
 
 
 class NeuralNetwork(object):
-    def __init__(self, epochs, lr):
-        # Define alguns parametros
+    def __init__(self, epochs=100, lr=0.01):
         self.epochs, self.lr = epochs, lr
-        # Inicia o layout da rede
         self.net, self.weights = [], []
-        # Funcao de ativacao
-        self.f_act = lambda x: 1/(1 + np.exp(-x))
-        # Funcao para o somatorio da entrada do neurônio
+        # Funcao de ativacao, entrada e saida do neuronio
+        self.f_act = lambda x: np.divide(1, np.add(1, np.exp(-x)))
         self.f_z = lambda x, w: np.dot(w, x)
-        # Funcao para a saida do neuronio
         self.f_a = lambda x, w: self.f_act(self.f_z(x, w))
 
+    # Treina a rede
     def train(self, inputs, targets):
-        # Derivada da funcao de ativacao
-        f_act_derivative = lambda x: np.exp(-x)/np.square(1 + np.exp(-x))
-        # Funcao de erro
+        # Funcao de erro, gradiente, atualizar o peso e derivada de f_act
         f_error = lambda d, y: np.subtract(d, y)
-        # Função para calcular o gradiente
         f_grad = lambda e, x, w: np.multiply(e, f_act_derivative(self.f_z(x, w)))
-        # Função para atualizar o peso
-        f_deltaW = lambda x, g: self.lr * np.dot(g, x.T)
+        f_deltaW = lambda x, g: np.multiply(self.lr, np.dot(g, x.T))
+        f_act_derivative = lambda x: np.divide(np.exp(-x), np.square(np.add(1, np.exp(-x))))
         # Passa um vetor de linhas para colunas
         to_col = lambda x: np.array([x]).T
-        # Inicia os pesos
         self._startWeights()
-        # Itera as epocas
+
         for epoch in range(self.epochs):
-            # Itera todas as entradas
             for actual_in, actual_target in zip(inputs, targets):
-                # Limpa as listas de erros e gradientes
                 errors, grads = [], []
-                # Passa as entradas e targets para um vetor de colunas
                 actual_in, actual_target = to_col(actual_in), to_col(actual_target)
-                # Atribui o vetor de entradas na primeira camada da rede
                 self.net[0] = actual_in
                 # FeedFoward
                 for i in range(len(self.weights)):
                     self.net[i+1] = self.f_a(self.net[i], self.weights[i])
-                # Erro da iteracao
+                # Erro na layer de saida
                 errors.insert(0, f_error(actual_target, self.net[-1]))
                 # Retropropagacao do custo
                 grads.insert(0, f_grad(errors[-1], self.net[-2], self.weights[-1]))
@@ -52,21 +41,22 @@ class NeuralNetwork(object):
                 for i in range(len(self.weights)):
                     self.weights[i] += f_deltaW(self.net[i], grads[i])
 
+    # Passa o parâmetro in_list como entrada e retorna a saída da rede
     def query(self, in_list):
-        # Converte a lista em array
         inputs = np.array(in_list).T
         self.net[0] = inputs
-        # FeedFoward
         for i in range(len(self.weights)):
             self.net[i+1] = self.f_a(self.net[i], self.weights[i])
         return self.net[-1]
 
+    # Adiciona uma layer com num_nodes de altura
     def add(self, num_nodes):
         self.net.append(num_nodes)
-        
+
+    # Inicia os pesos da rede
     def _startWeights(self):
         # Define a funcao que rege como os pesos serao iniciados
-        f_rand = lambda x, y: np.random.rand(x, y) - 0.5
+        f_rand = lambda x, y: np.subtract(np.random.rand(x, y), 0.5)
         # Calula os pesos
         for i in range(1, len(self.net)):
             # Tamanho da layer i x tamanho da lamanho da layer i-1

@@ -13,11 +13,11 @@ class NeuralNetwork(object):
 
     # Treina a rede
     def train(self, inputs, targets):
-        # Funcao de erro, gradiente, atualizar o peso e derivada de f_act
+        # Derivada de f_act, funcoes de erro, gradiente e atualizar o peso
+        f_act_derivative = lambda x: np.divide(np.exp(-x), np.square(np.add(1, np.exp(-x))))
         f_error = lambda d, y: np.subtract(d, y)
         f_grad = lambda e, x, w: np.multiply(e, f_act_derivative(self.f_z(x, w)))
         f_deltaW = lambda x, g: np.multiply(self.lr, np.dot(g, x.T))
-        f_act_derivative = lambda x: np.divide(np.exp(-x), np.square(np.add(1, np.exp(-x))))
         # Passa um vetor de linhas para colunas
         to_col = lambda x: np.array([x]).T
         self._startWeights()

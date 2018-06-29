@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 np.set_printoptions(suppress=True)
 
 
@@ -40,6 +40,9 @@ class NeuralNetwork(object):
                 # Ajuste dos pesos
                 for i in range(len(self.weights)):
                     self.weights[i] += f_deltaW(self.net[i], grads[i])
+            print(epoch)
+
+    # Passa o parâmetro in_list como entrada e retorna a saida da rede
 
     # Passa o parâmetro in_list como entrada e retorna a saída da rede
     def query(self, in_list):
@@ -48,6 +51,14 @@ class NeuralNetwork(object):
         for i in range(len(self.weights)):
             self.net[i+1] = self.f_a(self.net[i], self.weights[i])
         return self.net[-1]
+
+    # Retorna a precisão da rede, acertos e o numero de amostras
+    def acc(self, in_list, out_list):
+        corrects = 0
+        for i, (in_value, out_value) in enumerate(zip(in_list, out_list)):
+            if self.query([in_value]).argmax() == out_value.index(max(out_value)):
+                corrects += 1
+        return corrects/(i+1)*100
 
     # Adiciona uma layer com num_nodes de altura
     def add(self, num_nodes):

@@ -42,8 +42,6 @@ class NeuralNetwork(object):
                     self.weights[i] += f_deltaW(self.net[i], grads[i])
             print(epoch)
 
-    # Passa o parâmetro in_list como entrada e retorna a saida da rede
-
     # Passa o parâmetro in_list como entrada e retorna a saída da rede
     def query(self, in_list):
         inputs = np.array(in_list).T
@@ -52,7 +50,7 @@ class NeuralNetwork(object):
             self.net[i+1] = self.f_a(self.net[i], self.weights[i])
         return self.net[-1]
 
-    # Retorna a precisão da rede, acertos e o numero de amostras
+    # Retorna a precisao da rede
     def acc(self, in_list, out_list):
         corrects = 0
         for i, (in_value, out_value) in enumerate(zip(in_list, out_list)):

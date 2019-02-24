@@ -107,3 +107,9 @@ venv.bak/
 
 # gitignore
 .gitignore
+
+# vscode
+.vscode
+
+# Pipfile
+Pipfile

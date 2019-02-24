@@ -1,13 +1,65 @@
-# Digit Recognizer
+<h1 align="center">Digit Recognizer</h1>
+<p align="center"><img src="https://i.imgur.com/NxJZ6OU.png" width=481px height=257></p>
+
+### Resume
+Digit Recognizer is a library where the algorithm Multilayer Perceptron is implemented with intent to teach a neural network learn how to recognize handwritten numbers based on MNIST dataset. It's important remember, this is a basic implementation where there's NO OPTIMIZATION at algorithm, in other words, the training is SLOW but the results are satisfactory.<br>
+The book used as support material is: **HAYKIN, Simon. Redes Neurais: Princípios e Prática.**
+
+##### What is MNIST?
+
+A definition according to <span><i><a href="http://yann.lecun.com/exdb/mnist">MNIST database of handwritten digits</a></i></span>:<br>
+Is a database of handwritten digits, has a training set of 60,000 examples, and a test set of 10,000 examples. The digits have been size-normalized and centered in a fixed-size image (28 x 28). It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data while spending minimal efforts on preprocessing and formatting.
+
+##### How the Multilayer Perceptron works?
+A neural network is composed of neurons, where it is the fundamental processing unit for the operation of the network
+<span><img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Artificial_neuron.png"></span>
+
+### Requeriments
+![matplotlib](https://img.shields.io/badge/matplotlib-3.0.2-blue.svg?style=popout-square)
+![mnist](https://img.shields.io/badge/mnist-0.2.2-blue.svg?style=popout-square)
+![python-mnist](https://img.shields.io/badge/python_mnist-0.6-blue.svg?style=popout-square)
+![cycler](https://img.shields.io/badge/cycler-%E2%89%A50.10-blue.svg?style=popout-square)
+![six](https://img.shields.io/badge/six-%E2%89%A51.5-blue.svg?style=popout-square)
+![kiwisolver](https://img.shields.io/badge/kiwisolver-%E2%89%A51.0.1-blue.svg?style=popout-square)
+![numpy](https://img.shields.io/badge/numpy-%E2%89%A51.10.0-blue.svg?style=popout-square)
+![python-dateutil](https://img.shields.io/badge/python_dateutil-%E2%89%A52.1-blue.svg?style=popout-square)
+![pytz](https://img.shields.io/badge/pytz-%E2%89%A52011k-blue.svg?style=popout-square)
+![numpy](https://img.shields.io/badge/Numpy-%E2%89%A51.10.0-blue.svg?style=popout-square)
+![pyparsing](https://img.shields.io/badge/pyparsing-%E2%89%A52.0.1|%E2%89%A02.1.6|%E2%89%A02.1.2|%E2%89%A02.0.4-blue.svg?style=popout-square)
+![setuptools](https://img.shields.io/badge/setuptools-any-blue.svg?style=popout-square)
 
 ### Setup
 ```bash
 $ pip install -r requirements.txt
-$ python Main.py
 ```
 
-- O construtor da classe [`NeuralNetwork`](https://github.com/douglasJovenil/digitRecognizer/blob/master/NeuralNetwork.py#L6) recebe o número de épocas/repetições e a taxa de aprendizado.<br>
-- [`NeuralNetwork.train`](https://github.com/douglasJovenil/digitRecognizer/blob/master/NeuralNetwork.py#L15) - recebe os valores de entradas e saídas do dataset de treino.<br>
-- [`NeuralNetwork.query`](https://github.com/douglasJovenil/digitRecognizer/blob/master/NeuralNetwork.py#L46) - recebe um valor e retorna a previsão da rede neural.<br>
-- [`NeuralNetwork.acc`](https://github.com/douglasJovenil/digitRecognizer/blob/master/NeuralNetwork.py#L54) - recebe uma entrada e saída de teste e retorna a precisão da rede.<br>
-- [`NeuralNetwork.add`](https://github.com/douglasJovenil/digitRecognizer/blob/master/NeuralNetwork.py#L62) - adiciona uma camada na rede com o número do argumento passado para `num_nodes`.<br>
+### Methods & Files
+A brief explanation of each method of this repository.
+  - <em>NeuralNetwork.py</em>
+    - The constructor <span><i>NeuralNetwork<i></span> receives as argument the number of epochs and learning rate. e.g.
+    ```Python
+    NeuralNetwork(10, 0.5)
+    ```
+    - Add a layer to the network with quantity of neurons passed as argument.
+    ```Python
+    def add(self, num_nodes)
+    ```
+    - Receives the values of inputs and outputs of training dataset.
+    ```Python
+    def train(self, inputs, targets)
+    ```
+    - Receives a value and return the output of neural network.
+    ```Python
+    def query(self, in_list)
+    ```
+    - Receives an test input and output and return the precision of network.
+    ```Python
+    def acc(self, in_list, out_list)
+    ```
+  - <em>LoadMNIST.py</em>
+    - Receives the path of MNIST files and return the arrays of training and testing normalizeds.
+    ```Python
+    def generateData(path)
+    ```
+
+

@@ -1,6 +1,5 @@
 ﻿import numpy as np
-np.set_printoptions(suppress=True)
-
+import json
 
 class NeuralNetwork(object):
     def __init__(self, epochs=100, lr=0.01):
@@ -22,6 +21,7 @@ class NeuralNetwork(object):
         to_col = lambda x: np.array([x]).T
         self._startWeights()
 
+        print("Start training")
         for epoch in range(self.epochs):
             for actual_in, actual_target in zip(inputs, targets):
                 errors, grads = [], []
@@ -40,7 +40,7 @@ class NeuralNetwork(object):
                 # Ajuste dos pesos
                 for i in range(len(self.weights)):
                     self.weights[i] += f_deltaW(self.net[i], grads[i])
-            print(epoch)
+            print(f'Epoch: {epoch + 1}')
 
     # Passa o parâmetro in_list como entrada e retorna a saída da rede
     def query(self, in_list):
@@ -70,3 +70,55 @@ class NeuralNetwork(object):
         for i in range(1, len(self.net)):
             # Tamanho da layer i x tamanho da lamanho da layer i-1
             self.weights.append(f_rand(self.net[i], self.net[i-1]))
+
+    def getWeights(self):
+        return self.weights
+
+    def getNet(self):
+        return self.net
+    
+    def save(self, file_name):
+        json_dict = dict()
+        aux_dict = dict()
+        
+        # Input layer
+        json_dict['inputs'] = {'neurons': len(self.net[0])}
+        
+        # Hidden layers
+        aux_dict['quantity'] = len(self.net[1:-1])
+        aux_dict['neurons'] = [len(hidden) for hidden in self.net[1:-1]]
+        aux_dict['values'] = list()
+        for hidden in self.net[1:-1]: aux_dict['values'].append([value[0] for value in hidden])
+        json_dict['hiddens'] = aux_dict
+        aux_dict = dict()
+        
+        # Output
+        json_dict['outputs'] = {'neurons': len(self.net[-1])}
+        
+        # Weights
+        aux_dict['quantity'] = len(self.weights)
+        aux_dict['rows'] = [len(weight) for weight in self.weights]
+        aux_dict['cols'] = list()
+        for weight in self.weights: aux_dict['cols'].append(weight.tolist())
+        json_dict['weights'] = aux_dict
+        
+        with open('weights.json', 'w') as file:
+            json.dump(json_dict, file, indent=1)
+            
+    def load(self, path_json):
+        with open(path_json, 'r') as file: data = json.load(file)
+        f_zeros_col = lambda n: np.zeros((n, 1))
+
+        # Inputs
+        self.net.append(f_zeros_col(data['inputs']['neurons']))
+        
+        # Hiddens
+        for i in range(data['hiddens']['quantity']):
+            self.net.append(np.array([data['hiddens']['values'][i]]).T)
+            
+        # Output
+        self.net.append(f_zeros_col(data['outputs']['neurons']))
+        
+        # Weights
+        for i in range(data['weights']['quantity']):
+            self.weights.append(np.array(data['weights']['cols'][i]))

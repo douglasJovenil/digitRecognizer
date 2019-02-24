@@ -71,11 +71,6 @@ class NeuralNetwork(object):
             # Tamanho da layer i x tamanho da lamanho da layer i-1
             self.weights.append(f_rand(self.net[i], self.net[i-1]))
 
-    def getWeights(self):
-        return self.weights
-
-    def getNet(self):
-        return self.net
     
     def save(self, file_name):
         json_dict = dict()
@@ -103,7 +98,7 @@ class NeuralNetwork(object):
         json_dict['weights'] = aux_dict
         
         with open('weights.json', 'w') as file:
-            json.dump(json_dict, file, indent=1)
+            json.dump(json_dict, file)
             
     def load(self, path_json):
         with open(path_json, 'r') as file: data = json.load(file)
